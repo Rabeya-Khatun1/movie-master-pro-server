@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config()
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
-const port = 5000;
+const port = 3000;
 
 // middleware 
 app.use(cors())
@@ -172,6 +172,7 @@ if(maxRatings){
     //  user related apis 
     app.post('/users', async (req, res) => {
       const newUser = req.body;
+      newUser.role='user'
       const email = newUser.email;
       const query = { email: email }
       const existingUser = await usersCollection.findOne(query)
@@ -185,6 +186,24 @@ if(maxRatings){
       }
 
     })
+
+app.get('/users/role', verifyFirebaseToken, async (req, res) => {
+
+    const email = req.query.email;
+
+    if (!email) {
+      return res.status(400).send({ message: 'Email is required' });
+    }
+
+    const user = await usersCollection.findOne({ email });
+
+    if (!user) {
+      return res.status(404).send({ message: 'User not found' });
+    }
+
+    res.send({ role: user.role });
+
+});
 
 
     // movie add 
@@ -299,5 +318,5 @@ if(maxRatings){
 run().catch(console.dir)
 
 app.listen(port, () => {
-  // console.log(`smart server running on port ${port}`)
+  console.log(`smart server running on port ${port}`)
 })
