@@ -103,7 +103,7 @@ const watchlistCollection = db.collection('watchlist')
 
 
 const verifyAdmin =async (req, res, next)=>{
-    const email = req.decoded_email;
+    const email = req.token_email;
     const query = {email}
     const admin = await usersCollection.findOne(query)
     if(!admin || admin.role !== 'admin'){
